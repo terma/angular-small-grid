@@ -7,10 +7,14 @@ myapp.directive('angularSmallGrid', ['$compile', function ($compile) {
         link: function ($scope, $element, $attrs) {
             var config = void 0;
             var data = void 0;
+            var draggedColumnField = void 0;
 
             $scope.$watch($attrs.asgData, function (newData) {
                 data = newData;
-                if (config) populateData();
+                if (config) {
+                    if (data) populateData();
+                    else removeData();
+                }
             });
 
             $scope.$watch($attrs.asgConfig, function (newConfig) {
@@ -20,10 +24,24 @@ myapp.directive('angularSmallGrid', ['$compile', function ($compile) {
                     };
                 }
 
+                if (!newConfig.loaderTemplate) {
+                    newConfig.loaderTemplate = '<div>Loading...</div>';
+                }
+
                 config = newConfig;
                 createTable();
                 if (data) populateData();
             });
+
+            function removeData() {
+                console.log('remove data');
+
+                config.columns.forEach(function (column) {
+                    findColumnDiv(column.field).empty();
+                });
+
+                showLoader();
+            }
 
             function populateColumn(column, columnDiv) {
                 var cells = [];
@@ -41,6 +59,8 @@ myapp.directive('angularSmallGrid', ['$compile', function ($compile) {
                 config.columns.forEach(function (column) {
                     populateColumn(column, findColumnDiv(column.field));
                 });
+
+                hideLoader();
             }
 
             function createCell(column, row) {
@@ -53,27 +73,36 @@ myapp.directive('angularSmallGrid', ['$compile', function ($compile) {
 
             function createColumn(column) {
                 var columnDiv = $('<div class="column"></div>');
-                columnDiv.css('width', column.width);
                 columnDiv.attr('id', 'angular-small-grid-column-' + column.field);
+                columnDiv.css('width', column.width);
                 columnDiv.css('display', 'inline-block');
                 return columnDiv;
             }
 
             function createHeaderCell(column) {
                 var headCell = $('<div class="angular-small-grid-header-cell" draggable="true"></div>');
+
                 headCell.on('dragstart', function (e) {
-                    draggedColumnIndex = $(e.target).index();
+                    draggedColumnField = $(e.target).data('field');
                 });
                 headCell.on('dragover', function (e) {
                     e.preventDefault();
                 });
                 headCell.on('drop', function (e) {
                     e.preventDefault();
+
+                    if (!draggedColumnField) return;
+
                     var targetIndex = $(e.target).index();
                     var columns = $('.column');
-                    $(columns[targetIndex]).before(columns[draggedColumnIndex]);
+                    var headerCells = $('.angular-small-grid-header-cell');
+                    $(headerCells[targetIndex]).before(findHeadCellDiv(draggedColumnField));
+                    $(columns[targetIndex]).before(findColumnDiv(draggedColumnField));
+                    draggedColumnField = void 0;
                 });
+
                 headCell.attr('id', 'angular-small-grid-header-cell-' + column.field);
+                headCell.data('field', column.field);
                 if (column.headerTemplate) {
                     headCell.append($compile(column.headerTemplate)($scope));
                 } else {
@@ -84,12 +113,28 @@ myapp.directive('angularSmallGrid', ['$compile', function ($compile) {
                 return headCell;
             }
 
+            function showLoader() {
+                hideLoader();
+
+                var loader = $(config.loaderTemplate);
+                loader.attr('id', 'angular-small-grid-loader');
+                loader.css('top', config.headerHeight);
+                loader.addClass('angular-small-grid-loader');
+                $('.angular-small-grid-table').append(loader);
+            }
+
+            function hideLoader() {
+                $('.angular-small-grid-loader').remove();
+            }
+
             function createTable() {
                 console.log('create table with config:');
                 console.log(config);
 
+                showLoader();
+
                 var body = $('.angular-small-grid-body');
-                $('.angular-small-grid-body').scroll(function (e) {
+                $('.angular-small-grid-body').scroll(function () {
                     var scrollLeft = body.scrollLeft();
                     $('.angular-small-grid-header-cell').eq(0).css('margin-left', -scrollLeft);
 

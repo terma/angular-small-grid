@@ -1,4 +1,4 @@
-myapp.controller('ctrl', function ($scope) {
+myapp.controller('ctrl', function ($scope, $timeout) {
     $scope.config = {
         cellHeight: 30,
         headerHeight: 30,
@@ -31,12 +31,23 @@ myapp.controller('ctrl', function ($scope) {
     $scope.pp = 12;
     $scope.config.columns[1].headerTemplate = '<span>OPA{{::pp}}</span>';
 
-    $scope.data = [];
-    for (var r = 0; r < 100; r++) {
-        var row = {};
-        for (var p = 0; p < 30; p++) row['column' + p] = 'x' + p + 'y' + r;
-        $scope.data.push(row);
+    function createData() {
+        $scope.data = [];
+        for (var r = 0; r < 100; r++) {
+            var row = {};
+            for (var p = 0; p < 30; p++) row['column' + p] = 'x' + p + 'y' + r;
+            $scope.data.push(row);
+        }
     }
+
+    createData();
+
+    $scope.reload = function () {
+        $scope.data = void 0;
+        $timeout(function () {
+            createData();
+        }, 5000);
+    };
 
     var pinLeftToggler = false;
     $scope.pinLeft = function (field) {
