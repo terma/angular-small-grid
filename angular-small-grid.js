@@ -1,19 +1,19 @@
 var myapp = angular.module('app', []);
 
-myapp.directive('smallGrid', ['$compile', function ($compile) {
+myapp.directive('angularSmallGrid', ['$compile', function ($compile) {
     return {
         restrict: 'E',
-        templateUrl: 'template.html',
+        templateUrl: 'angular-small-grid-template.html',
         link: function ($scope, $element, $attrs) {
             var config = void 0;
             var data = void 0;
 
-            $scope.$watch($attrs.sgData, function (newData) {
+            $scope.$watch($attrs.asgData, function (newData) {
                 data = newData;
                 if (config) populateData();
             });
 
-            $scope.$watch($attrs.sgConfig, function (newConfig) {
+            $scope.$watch($attrs.asgConfig, function (newConfig) {
                 if (!newConfig.cellTemplate) {
                     newConfig.cellTemplate = function (column, value) {
                         return value;
@@ -39,12 +39,12 @@ myapp.directive('smallGrid', ['$compile', function ($compile) {
                 console.log(data);
 
                 config.columns.forEach(function (column) {
-                    populateColumn(column, $('#column-' + column.field));
+                    populateColumn(column, findColumnDiv(column.field));
                 });
             }
 
             function createCell(column, row) {
-                var cell = $('<div class="cell"></div>');
+                var cell = $('<div class="angular-small-grid-cell"></div>');
                 cell.html(config.cellTemplate(column, row[column.field]));
                 cell.css('width', column.width);
                 cell.css('height', config.cellHeight);
@@ -54,13 +54,13 @@ myapp.directive('smallGrid', ['$compile', function ($compile) {
             function createColumn(column) {
                 var columnDiv = $('<div class="column"></div>');
                 columnDiv.css('width', column.width);
-                columnDiv.attr('id', 'column-' + column.field);
+                columnDiv.attr('id', 'angular-small-grid-column-' + column.field);
                 columnDiv.css('display', 'inline-block');
                 return columnDiv;
             }
 
             function createHeaderCell(column) {
-                var headCell = $('<div class="headCell" draggable="true"></div>');
+                var headCell = $('<div class="angular-small-grid-header-cell" draggable="true"></div>');
                 headCell.on('dragstart', function (e) {
                     draggedColumnIndex = $(e.target).index();
                 });
@@ -73,7 +73,7 @@ myapp.directive('smallGrid', ['$compile', function ($compile) {
                     var columns = $('.column');
                     $(columns[targetIndex]).before(columns[draggedColumnIndex]);
                 });
-                headCell.attr('id', 'headCell-' + column.field);
+                headCell.attr('id', 'angular-small-grid-header-cell-' + column.field);
                 if (column.headerTemplate) {
                     headCell.append($compile(column.headerTemplate)($scope));
                 } else {
@@ -88,26 +88,26 @@ myapp.directive('smallGrid', ['$compile', function ($compile) {
                 console.log('create table with config:');
                 console.log(config);
 
-                var body = $('.body');
-                $('.body').scroll(function (e) {
+                var body = $('.angular-small-grid-body');
+                $('.angular-small-grid-body').scroll(function (e) {
                     var scrollLeft = body.scrollLeft();
-                    $('.headCell').eq(0).css('margin-left', -scrollLeft);
+                    $('.angular-small-grid-header-cell').eq(0).css('margin-left', -scrollLeft);
 
                     var scrollTop = body.scrollTop();
                     $('.pinned-left').css('margin-top', -scrollTop);
                 });
 
-                $('.header').css('height', config.headerHeight);
+                $('.angular-small-grid-header').css('height', config.headerHeight);
                 config.columns.forEach(function (column) {
                     if (!column.visible) return;
 
                     var headCell = createHeaderCell(column);
-                    $('.header').append(headCell);
+                    $('.angular-small-grid-header').append(headCell);
 
                     var columnDiv = createColumn(column);
                     body.append(columnDiv);
 
-                    if (column.pinned === 'left') $scope.smallGridPinLeft(column.field);
+                    if (column.pinned === 'left') $scope.angularSmallGridPinLeft(column.field);
                 });
             }
 
@@ -119,7 +119,7 @@ myapp.directive('smallGrid', ['$compile', function ($compile) {
                 return r;
             }
 
-            $scope.smallGridPinLeft = function (field) {
+            $scope.angularSmallGridPinLeft = function (field) {
                 var column = findColumn(field);
                 column.pinned = 'left';
 
@@ -130,8 +130,8 @@ myapp.directive('smallGrid', ['$compile', function ($compile) {
 
                 var sumLeft = sumWidthPinnedLeft();
 
-                $('.header').css('margin-left', sumLeft);
-                $('.body').css('margin-left', sumLeft);
+                $('.angular-small-grid-header').css('margin-left', sumLeft);
+                $('.angular-small-grid-body').css('margin-left', sumLeft);
 
                 var headCellDiv = findHeadCellDiv(field).detach();
                 var columnDiv = findColumnDiv(field).detach();
@@ -141,24 +141,22 @@ myapp.directive('smallGrid', ['$compile', function ($compile) {
                 columnDiv.css('left', left);
                 columnDiv.css('overflow', 'hidden');
                 columnDiv.addClass('pinned-left');
-                $('.table').append(columnDiv);
+                $('.angular-small-grid-table').append(columnDiv);
 
                 headCellDiv.css('position', 'absolute');
                 headCellDiv.css('top', 0);
                 headCellDiv.css('left', left);
-                $('.table').append(headCellDiv);
+                $('.angular-small-grid-table').append(headCellDiv);
             };
 
-            $scope.smallGridUnpinLeft = function (field) {
+            $scope.angularSmallGridUnpinLeft = function (field) {
                 var column = findColumn(field);
                 column.pinned = void 0;
 
                 var sumLeft = sumWidthPinnedLeft();
 
-                $('.header').css('margin-left', sumLeft);
-                $('.body').css('margin-left', sumLeft);
-                // $('.header').css('width', '');
-                // $('.body').css('width', '');
+                $('.angular-small-grid-header').css('margin-left', sumLeft);
+                $('.angular-small-grid-body').css('margin-left', sumLeft);
 
                 var headCellDiv = findHeadCellDiv(field);
                 headCellDiv.detach();
@@ -186,7 +184,7 @@ myapp.directive('smallGrid', ['$compile', function ($compile) {
                 }
             };
 
-            $scope.smallGridFindColumn = function (field) {
+            $scope.angularSmallGridFindColumn = function (field) {
                 return findColumn(field);
             };
 
@@ -211,7 +209,7 @@ myapp.directive('smallGrid', ['$compile', function ($compile) {
             }
 
             function jqueryColumnId(field) {
-                return '#column-' + field;
+                return '#angular-small-grid-column-' + field;
             }
 
             function findColumnDiv(field) {
@@ -219,10 +217,10 @@ myapp.directive('smallGrid', ['$compile', function ($compile) {
             }
 
             function findHeadCellDiv(field) {
-                return $('#headCell-' + field);
+                return $('#angular-small-grid-header-cell-' + field);
             }
 
-            $scope.smallGridShowColumn = function (field) {
+            $scope.angularSmallGridShowColumn = function (field) {
                 var column = findColumn(field);
                 if (column.pinned) return;
                 column.visible = true;
@@ -242,13 +240,13 @@ myapp.directive('smallGrid', ['$compile', function ($compile) {
                 }
             };
 
-            $scope.smallGridHideColumn = function (field) {
+            $scope.angularSmallGridHideColumn = function (field) {
                 var column = findColumn(field);
                 if (column.pinned) return;
                 column.visible = false;
 
-                $('#column-' + field).remove();
-                $('#headCell-' + field).remove();
+                findColumnDiv(field).remove();
+                findHeadCellDiv(field).remove();
             };
         }
     };

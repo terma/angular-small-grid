@@ -1,14 +1,14 @@
-.table {
+.angular-small-grid-table {
     position: relative;
     overflow: hidden;
 }
 
-.header {
+.angular-small-grid-header {
     /*width: 600px;*/
     overflow: hidden;
 }
 
-.body {
+.angular-small-grid-body {
     /*width: 600px;*/
     /*height: 200px;*/
     overflow: scroll;
@@ -16,11 +16,11 @@
     white-space: nowrap;
 }
 
-.headCell {
+.angular-small-grid-header-cell {
     display: inline-block;
 }
 
-.cell {
+.angular-small-grid-cell {
     float: left;
     display: inline-block;
 }

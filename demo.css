@@ -1,12 +1,12 @@
-.headCell {
+.angular-small-grid-header-cell {
     background-color: white;
 }
 
-.cell {
+.angular-small-grid-cell {
     background-color: yellow;
 }
 
-.table {
+.angular-small-grid-table {
     position: absolute;
     top: 100px;
     left: 50px;
@@ -14,7 +14,7 @@
     bottom: 50px;
 }
 
-.body {
+.angular-small-grid-body {
     position: absolute;
     top: 30px;
     left: 0;
