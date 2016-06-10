@@ -3,7 +3,7 @@ var myapp = angular.module('app', []);
 myapp.directive('angularSmallGrid', ['$compile', function ($compile) {
     return {
         restrict: 'E',
-        templateUrl: 'angular-small-grid-template.html',
+        template: '<div class="angular-small-grid-table"><div class="angular-small-grid-header"></div><div class="angular-small-grid-body"></div></div>',
         link: function ($scope, $element, $attrs) {
             var config = void 0;
             var data = void 0;
