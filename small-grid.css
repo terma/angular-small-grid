@@ -4,13 +4,13 @@
 }
 
 .header {
-    width: 600px;
+    /*width: 600px;*/
     overflow: hidden;
 }
 
 .body {
-    width: 600px;
-    height: 200px;
+    /*width: 600px;*/
+    /*height: 200px;*/
     overflow: scroll;
     position: relative;
     white-space: nowrap;
@@ -18,15 +18,9 @@
 
 .headCell {
     display: inline-block;
-    --border: 1px solid black;
-    /* styling */
-    background-color: white;
 }
 
 .cell {
     float: left;
     display: inline-block;
-    --position: absolute;
-    /* just styling */
-    background-color: yellow;
 }

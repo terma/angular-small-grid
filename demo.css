@@ -1,0 +1,23 @@
+.headCell {
+    background-color: white;
+}
+
+.cell {
+    background-color: yellow;
+}
+
+.table {
+    position: absolute;
+    top: 100px;
+    left: 50px;
+    right: 50px;
+    bottom: 50px;
+}
+
+.body {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
