@@ -1,3 +1,5 @@
-# angular-small-grid1
+# angular-small-grid
 
-Demo (http://terma.github.io/angular-small-grid/demo.html)
+Licensed MIT
+
+[Demo](http://terma.github.io/angular-small-grid/demo.html)
