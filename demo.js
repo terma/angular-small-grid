@@ -1,4 +1,6 @@
-myapp.controller('ctrl', function ($scope, $timeout) {
+var app = angular.module('app', ['angularSmallGrid']);
+
+app.controller('ctrl', function ($scope, $timeout) {
     $scope.columnFields = void 0;
 
     $scope.config = {
