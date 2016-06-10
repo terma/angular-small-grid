@@ -28,6 +28,10 @@ myapp.directive('angularSmallGrid', ['$compile', function ($compile) {
                     newConfig.loaderTemplate = '<div>Loading...</div>';
                 }
 
+                // empty default listener
+                if (!newConfig.onOrderChange) newConfig.onOrderChange = function () {
+                };
+
                 config = newConfig;
                 createTable();
                 if (data) populateData();
@@ -83,7 +87,9 @@ myapp.directive('angularSmallGrid', ['$compile', function ($compile) {
                 var headCell = $('<div class="angular-small-grid-header-cell" draggable="true"></div>');
 
                 headCell.on('dragstart', function (e) {
-                    draggedColumnField = $(e.target).data('field');
+                    var field = $(e.target).data('field');
+                    if (findColumn(field).pinned) e.preventDefault();
+                    else draggedColumnField = field;
                 });
                 headCell.on('dragover', function (e) {
                     e.preventDefault();
@@ -98,7 +104,15 @@ myapp.directive('angularSmallGrid', ['$compile', function ($compile) {
                     var headerCells = $('.angular-small-grid-header-cell');
                     $(headerCells[targetIndex]).before(findHeadCellDiv(draggedColumnField));
                     $(columns[targetIndex]).before(findColumnDiv(draggedColumnField));
+
+                    var draggedIndex = findColumnIndex(draggedColumnField);
+                    var temp = config.columns[draggedIndex];
+                    config.columns[draggedIndex] = config.columns[targetIndex];
+                    config.columns[targetIndex] = temp;
+
+                    config.onOrderChange(draggedColumnField);
                     draggedColumnField = void 0;
+                    $scope.$apply();
                 });
 
                 headCell.attr('id', 'angular-small-grid-header-cell-' + column.field);
@@ -239,6 +253,12 @@ myapp.directive('angularSmallGrid', ['$compile', function ($compile) {
                     if (column.field === field) r = column;
                 });
                 return r;
+            }
+
+            function findColumnIndex(field) {
+                for (var c = 0; c < config.columns.length; c++) {
+                    if (config.columns[c].field === field) return c;
+                }
             }
 
             function findPreviousColumn(field) {

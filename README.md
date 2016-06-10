@@ -30,6 +30,9 @@ $scope.config = {
   // optional if not specified just Loading... (doesn't support Angular markup)
   loaderTemplate: '<div>L...</div>',
 
+  // optional, raised when columns order was changed
+  onOrderChange: function () {},
+
   columns: [{
     name: 'Visible Name',
     field: 'fieldNameInDataObject',

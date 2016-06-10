@@ -1,4 +1,6 @@
 myapp.controller('ctrl', function ($scope, $timeout) {
+    $scope.columnFields = void 0;
+
     $scope.config = {
         cellHeight: 30,
         headerHeight: 30,
@@ -8,17 +10,24 @@ myapp.controller('ctrl', function ($scope, $timeout) {
             return 'DATA' + value;
         },
 
-        columns: []
+        onOrderChange: function () {
+            $scope.columnFields = '';
+            $scope.config.columns.forEach(function (column) {
+                if ($scope.columnFields.length < 50)
+                    $scope.columnFields += ' ' + column.field;
+            });
+        },
+
+        columns: [{
+            field: 'selector',
+            visible: true,
+            width: 20,
+            pinned: 'left',
+            headerTemplate: '<span>D</span>'
+        }]
     };
 
-    $scope.config.columns.push({
-        field: 'selector',
-        visible: true,
-        width: 20,
-        pinned: 'left',
-        headerTemplate: '<span>D</span>'
-    });
-
+    // more columns
     for (var i = 0; i < 30; i++) {
         $scope.config.columns.push({
             field: 'column' + i,
