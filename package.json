@@ -1,0 +1,14 @@
+{
+  "name": "angular-small-grid",
+  "version": "0.0.1",
+  "author": "Artem Stasiuk <artem.stasuk@gmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "grid",
+    "table"
+  ],
+  "bugs": {
+    "url": "https://github.com/terma/angular-small-grid/issues"
+  }
+}
