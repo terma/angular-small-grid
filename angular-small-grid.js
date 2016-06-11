@@ -31,7 +31,11 @@
                     if (!newConfig.onOrderChange) newConfig.onOrderChange = function () {
                     };
 
+                    // before new config try to store old
+                    storeColumnSettings();
+
                     config = newConfig;
+                    restoreColumnsSettings();
                     createTable();
                     if (data) populateData();
                 });
@@ -75,7 +79,7 @@
                 }
 
                 function createColumn(column) {
-                    var columnDiv = $('<div class="column"></div>');
+                    var columnDiv = $('<div class="angular-small-grid-column"></div>');
                     columnDiv.attr('id', 'angular-small-grid-column-' + column.field);
                     columnDiv.css('width', column.width);
                     columnDiv.css('display', 'inline-block');
@@ -99,7 +103,7 @@
                         if (!draggedColumnField) return;
 
                         var targetIndex = $(e.target).index();
-                        var columns = $('.column');
+                        var columns = $('.angular-small-grid-column');
                         var headerCells = $('.angular-small-grid-header-cell');
                         $(headerCells[targetIndex]).before(findHeadCellDiv(draggedColumnField));
                         $(columns[targetIndex]).before(findColumnDiv(draggedColumnField));
@@ -144,6 +148,11 @@
                     console.log('create table with config:');
                     console.log(config);
 
+                    $('.angular-small-grid-header').empty();
+                    $('.angular-small-grid-header-cell').remove();
+                    $('.angular-small-grid-body').empty();
+                    $('.angular-small-grid-column').remove();
+
                     showLoader();
 
                     var body = $('.angular-small-grid-body');
@@ -165,7 +174,10 @@
                         var columnDiv = createColumn(column);
                         body.append(columnDiv);
 
-                        if (column.pinned === 'left') $scope.angularSmallGridPinLeft(column.field);
+                        if (column.pinned === 'left') {
+                            column.pinned = void 0;
+                            $scope.angularSmallGridPinLeft(column.field);
+                        }
                     });
                 }
 
@@ -177,38 +189,117 @@
                     return r;
                 }
 
+                function sumWidthPinnedLeftBefore(field) {
+                    var r = 0;
+                    for (var c = 0; c < config.columns.length; c++) {
+                        var column = config.columns[c];
+                        if (column.field === field) break;
+                        if (column.pinned === 'left') r += column.width;
+                    }
+                    return r;
+                }
+
+                function findColumn(field) {
+                    var r = void 0;
+                    if (config) {
+                        config.columns.forEach(function (column) {
+                            if (column.field === field) r = column;
+                        });
+                    }
+                    return r;
+                }
+
+                function findColumnIndex(field) {
+                    for (var c = 0; c < config.columns.length; c++) {
+                        if (config.columns[c].field === field) return c;
+                    }
+                }
+
+                function findPreviousColumn(field) {
+                    for (var c = 1; c < config.columns.length; c++) {
+                        if (config.columns[c].field === field) return config.columns[c - 1];
+                    }
+                }
+
+                function findNextColumn(field) {
+                    for (var c = 0; c < config.columns.length - 1; c++) {
+                        if (config.columns[c].field === field) return config.columns[c + 1];
+                    }
+                }
+
+                function jqueryColumnId(field) {
+                    return '#angular-small-grid-column-' + field;
+                }
+
+                function findColumnDiv(field) {
+                    return $(jqueryColumnId(field));
+                }
+
+                function findHeadCellDiv(field) {
+                    return $('#angular-small-grid-header-cell-' + field);
+                }
+
+                $scope.angularSmallGridShowColumn = function (field) {
+                    var column = findColumn(field);
+                    if (column.pinned || column.visible) return;
+                    column.visible = true;
+
+                    var prevColumn = findPreviousColumn(column.field);
+                    var nextColumn = findNextColumn(column.field);
+
+                    var columnDiv = createColumn(column);
+                    populateColumn(column, columnDiv);
+                    var cellHeaderDiv = createHeaderCell(column);
+                    if (nextColumn) {
+                        findColumnDiv(nextColumn.field).before(columnDiv);
+                        findHeadCellDiv(nextColumn.field).before(cellHeaderDiv);
+                    } else {
+                        findColumnDiv(nextColumn.field).before(columnDiv);
+                        findHeadCellDiv(prevColumn.field).before(cellHeaderDiv);
+                    }
+                };
+
+                $scope.angularSmallGridHideColumn = function (field) {
+                    var column = findColumn(field);
+                    if (column.pinned || !column.visible) return;
+                    column.visible = false;
+
+                    findColumnDiv(field).remove();
+                    findHeadCellDiv(field).remove();
+                };
+
                 $scope.angularSmallGridPinLeft = function (field) {
                     var column = findColumn(field);
+                    if (!column.visible || column.pinned) return;
+
                     column.pinned = 'left';
 
-                    var left = 0;
-                    config.columns.forEach(function (column) {
-                        if (column.pinned === 'left' && column.field != field) left += column.width;
-                    });
+                    var beforeLeft = sumWidthPinnedLeftBefore(field);
+                    var allLeft = sumWidthPinnedLeft();
 
-                    var sumLeft = sumWidthPinnedLeft();
-
-                    $('.angular-small-grid-header').css('margin-left', sumLeft);
-                    $('.angular-small-grid-body').css('margin-left', sumLeft);
+                    $('.angular-small-grid-header').css('margin-left', allLeft);
+                    $('.angular-small-grid-body').css('margin-left', allLeft);
 
                     var headCellDiv = findHeadCellDiv(field).detach();
                     var columnDiv = findColumnDiv(field).detach();
 
                     columnDiv.css('position', 'absolute');
                     columnDiv.css('top', config.headerHeight);
-                    columnDiv.css('left', left);
+                    columnDiv.css('left', beforeLeft);
                     columnDiv.css('overflow', 'hidden');
                     columnDiv.addClass('pinned-left');
                     $('.angular-small-grid-table').append(columnDiv);
 
                     headCellDiv.css('position', 'absolute');
                     headCellDiv.css('top', 0);
-                    headCellDiv.css('left', left);
+                    headCellDiv.css('left', beforeLeft);
                     $('.angular-small-grid-table').append(headCellDiv);
                 };
 
                 $scope.angularSmallGridUnpinLeft = function (field) {
                     var column = findColumn(field);
+                    if (!column.visible || !column.pinned) return;
+
                     column.pinned = void 0;
 
                     var sumLeft = sumWidthPinnedLeft();
@@ -246,72 +337,50 @@
                     return findColumn(field);
                 };
 
-                function findColumn(field) {
-                    var r = void 0;
-                    config.columns.forEach(function (column) {
-                        if (column.field === field) r = column;
-                    });
-                    return r;
-                }
+                function restoreColumnsSettings() {
+                    if (config && config.localStorageKey) {
+                        var json = window.localStorage.getItem(config.localStorageKey);
+                        var configToRestore = JSON.parse(json);
+                        if (configToRestore) {
+                            var sortedColumns = [];
+                            configToRestore.forEach(function (columnToRestore) {
+                                var column = findColumn(columnToRestore.field);
+                                if (column) {
+                                    column.width = columnToRestore.width;
+                                    column.visible = columnToRestore.visible;
+                                    column.pinned = columnToRestore.pinned;
+                                    sortedColumns.push(column);
+                                }
+                            });
 
-                function findColumnIndex(field) {
-                    for (var c = 0; c < config.columns.length; c++) {
-                        if (config.columns[c].field === field) return c;
+                            // add other unsorted
+                            config.columns.forEach(function (column) {
+                                if (sortedColumns.indexOf(column) < 0) sortedColumns.push(column);
+                            });
+
+                            config.columns = sortedColumns;
+                        }
                     }
                 }
 
-                function findPreviousColumn(field) {
-                    for (var c = 1; c < config.columns.length; c++) {
-                        if (config.columns[c].field === field) return config.columns[c - 1];
+                function storeColumnSettings() {
+                    if (config && config.localStorageKey) {
+                        var configToStore = [];
+                        config.columns.forEach(function (column) {
+                            configToStore.push({
+                                field: column.field,
+                                width: column.width,
+                                visible: column.visible,
+                                pinned: column.pinned
+                            });
+                        });
+                        window.localStorage.setItem(config.localStorageKey, JSON.stringify(configToStore));
                     }
                 }
 
-                function findNextColumn(field) {
-                    for (var c = 0; c < config.columns.length - 1; c++) {
-                        if (config.columns[c].field === field) return config.columns[c + 1];
-                    }
-                }
-
-                function jqueryColumnId(field) {
-                    return '#angular-small-grid-column-' + field;
-                }
-
-                function findColumnDiv(field) {
-                    return $(jqueryColumnId(field));
-                }
-
-                function findHeadCellDiv(field) {
-                    return $('#angular-small-grid-header-cell-' + field);
-                }
-
-                $scope.angularSmallGridShowColumn = function (field) {
-                    var column = findColumn(field);
-                    if (column.pinned) return;
-                    column.visible = true;
-
-                    var prevColumn = findPreviousColumn(column.field);
-                    var nextColumn = findNextColumn(column.field);
-
-                    var columnDiv = createColumn(column);
-                    populateColumn(column, columnDiv);
-                    var cellHeaderDiv = createHeaderCell(column);
-                    if (nextColumn) {
-                        findColumnDiv(nextColumn.field).before(columnDiv);
-                        findHeadCellDiv(nextColumn.field).before(cellHeaderDiv);
-                    } else {
-                        findColumnDiv(nextColumn.field).before(columnDiv);
-                        findHeadCellDiv(prevColumn.field).before(cellHeaderDiv);
-                    }
-                };
-
-                $scope.angularSmallGridHideColumn = function (field) {
-                    var column = findColumn(field);
-                    if (column.pinned) return;
-                    column.visible = false;
-
-                    findColumnDiv(field).remove();
-                    findHeadCellDiv(field).remove();
-                };
+                $scope.$on('$destroy', function () {
+                    storeColumnSettings();
+                })
             }
         };
     }]);

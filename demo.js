@@ -3,44 +3,53 @@ var app = angular.module('app', ['angularSmallGrid']);
 app.controller('ctrl', function ($scope, $timeout) {
     $scope.columnFields = void 0;
 
-    $scope.config = {
-        cellHeight: 30,
-        headerHeight: 30,
+    function createConfig() {
+        var config = {
+            localStorageKey: 'my-grid-settings',
+            
+            cellHeight: 30,
+            headerHeight: 30,
 
-        cellTemplate: function (column, value) {
-            if (column.field === 'selector') return '';
-            return 'DATA' + value;
-        },
+            cellTemplate: function (column, value) {
+                if (column.field === 'selector') return '';
+                return 'DATA' + value;
+            },
 
-        onOrderChange: function () {
-            $scope.columnFields = '';
-            $scope.config.columns.forEach(function (column) {
-                if ($scope.columnFields.length < 50)
-                    $scope.columnFields += ' ' + column.field;
+            onOrderChange: function () {
+                $scope.columnFields = '';
+                $scope.config.columns.forEach(function (column) {
+                    if ($scope.columnFields.length < 50)
+                        $scope.columnFields += ' ' + column.field;
+                });
+            },
+
+            columns: [{
+                field: 'selector',
+                visible: true,
+                width: 20,
+                pinned: 'left',
+                headerTemplate: '<span>D</span>'
+            }]
+        };
+
+        // more columns
+        for (var i = 0; i < 30; i++) {
+            config.columns.push({
+                field: 'column' + i,
+                name: 'Column ' + i,
+                visible: true,
+                width: 100
             });
-        },
+        }
 
-        columns: [{
-            field: 'selector',
-            visible: true,
-            width: 20,
-            pinned: 'left',
-            headerTemplate: '<span>D</span>'
-        }]
-    };
+        config.columns[1].headerTemplate = '<span>OPA{{::pp}}</span>';
 
-    // more columns
-    for (var i = 0; i < 30; i++) {
-        $scope.config.columns.push({
-            field: 'column' + i,
-            name: 'Column ' + i,
-            visible: true,
-            width: 100
-        });
+        return config;
     }
 
+    $scope.config = createConfig();
+
     $scope.pp = 12;
-    $scope.config.columns[1].headerTemplate = '<span>OPA{{::pp}}</span>';
 
     function createData() {
         $scope.data = [];
@@ -65,6 +74,10 @@ app.controller('ctrl', function ($scope, $timeout) {
         if (!pinLeftToggler) $scope.angularSmallGridPinLeft(field);
         else $scope.angularSmallGridUnpinLeft(field);
         pinLeftToggler = !pinLeftToggler;
+    };
+
+    $scope.updateConfig = function () {
+        $scope.config = createConfig();
     };
 
     $scope.toggleV = function () {

@@ -23,6 +23,10 @@ Include ```angular-small-grid.js``` and ```angular-small-grid.css``` to your pag
 $scope.config = {
   cellHeight: 30,
   headerHeight: 30,
+
+  // optional if you want to store state of your grid in localStorage
+  // width, position, pinned state, visibility will be stored
+  localStorageKey: 'my-settings',
   
   // optional if not specify show value from data object
   cellTemplate: function (column, value) { return value; }, 
