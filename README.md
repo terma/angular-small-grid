@@ -25,7 +25,10 @@ npm i angular-small-grid
 
 ### Include resources
 
-Include ```angular-small-grid.js``` and ```angular-small-grid.css``` to your page
+```html
+<script type="application/javascript" src="angular-small-grid.js"></script>
+<link rel="stylesheet" href="angular-small-grid.css">
+```
 
 ### Set Grid Config
 
