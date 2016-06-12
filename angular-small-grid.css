@@ -8,6 +8,20 @@
     white-space: nowrap;
 }
 
+.angular-small-grid-header-cell {
+    display: inline-block;
+    position: relative;
+}
+
+.angular-small-grid-resizer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 5px;
+    bottom: 0;
+    cursor: move;
+}
+
 .angular-small-grid-loader {
     position: absolute;
     text-align: center;
@@ -39,11 +53,5 @@
     bottom: 0;
 }
 
-.angular-small-grid-header-cell {
-    display: inline-block;
-}
-
 .angular-small-grid-cell {
-    float: left;
-    display: inline-block;
 }

@@ -7,6 +7,7 @@
                 var config = void 0;
                 var data = void 0;
                 var draggedColumnField = void 0;
+                var resizeInProgress = void 0;
 
                 $scope.$watch($attrs.asgData, function (newData) {
                     data = newData;
@@ -86,7 +87,6 @@
                 function createCell(column, row) {
                     var cell = $('<div class="angular-small-grid-cell"></div>');
                     cell.html(config.cellTemplate(column, row[column.field]));
-                    cell.css('width', column.width);
                     cell.css('height', config.cellHeight);
                     return cell;
                 }
@@ -138,6 +138,15 @@
                     } else {
                         headCell.html(column.name);
                     }
+
+                    var resizer = $('<div class="angular-small-grid-resizer"></div>');
+                    resizer.mousedown(function (e) {
+                        resizeInProgress = {element: headCell, x: e.clientX, column: column};
+                        $('.angular-small-grid-header').css('cursor', 'move');
+                        e.preventDefault();
+                    });
+                    headCell.append(resizer);
+
                     headCell.css('width', column.width);
                     headCell.css('height', config.headerHeight);
                     return headCell;
@@ -190,6 +199,18 @@
 
                         var scrollTop = body.scrollTop();
                         $('.pinned-left').css('margin-top', -scrollTop);
+                    });
+
+                    $('.angular-small-grid-header').off('mouseup');
+                    $('.angular-small-grid-header').mouseup(function (e) {
+                        if (resizeInProgress) {
+                            var w = resizeInProgress.column.width + e.clientX - resizeInProgress.x;
+                            resizeInProgress.column.width = resizeInProgress.column.width + e.clientX - resizeInProgress.x;
+                            resizeInProgress.element.css('width', resizeInProgress.column.width);
+                            findColumnDiv(resizeInProgress.column.field).css('width', w);
+                            $('.angular-small-grid-header').css('cursor', '');
+                            resizeInProgress = void 0;
+                        }
                     });
 
                     $('.angular-small-grid-header').css('height', config.headerHeight);
