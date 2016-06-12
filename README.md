@@ -2,6 +2,11 @@
 
 Licensed MIT
 
+## Features
+
+* Reordable columns
+* Resizable columns
+
 [Demo](http://terma.github.io/angular-small-grid/demo.html)
 
 ## How To Install
