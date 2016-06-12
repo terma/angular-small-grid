@@ -6,7 +6,7 @@ app.controller('ctrl', function ($scope, $timeout) {
     function createConfig() {
         var config = {
             localStorageKey: 'my-grid-settings',
-            
+
             cellHeight: 30,
             headerHeight: 30,
 
@@ -28,12 +28,17 @@ app.controller('ctrl', function ($scope, $timeout) {
                 visible: true,
                 width: 20,
                 pinned: 'left',
-                headerTemplate: '<span>D</span>'
+                headerTemplate: '<span>*</span>'
             }]
         };
 
         // more columns
-        for (var i = 0; i < 30; i++) {
+        config.columns.push({field: 'column0', name: 'IE', visible: true, width: 100});
+        config.columns.push({field: 'column1', name: 'Firefox', visible: true, width: 100});
+        config.columns.push({field: 'column2', name: 'Chrome', visible: true, width: 100});
+        config.columns.push({field: 'column3', name: 'Opera', visible: true, width: 100});
+        config.columns.push({field: 'column4', name: 'Safari', visible: true, width: 100});
+        for (var i = 5; i < 30; i++) {
             config.columns.push({
                 field: 'column' + i,
                 name: 'Column ' + i,
@@ -42,7 +47,7 @@ app.controller('ctrl', function ($scope, $timeout) {
             });
         }
 
-        config.columns[1].headerTemplate = '<span>OPA{{::pp}}</span>';
+        config.columns[1].headerTemplate = '<span>Field {{::pp}}</span>';
 
         return config;
     }
@@ -66,7 +71,7 @@ app.controller('ctrl', function ($scope, $timeout) {
         $scope.data = void 0;
         $timeout(function () {
             createData();
-        }, 5000);
+        }, 2000);
     };
 
     var pinLeftToggler = false;
@@ -78,6 +83,10 @@ app.controller('ctrl', function ($scope, $timeout) {
 
     $scope.updateConfig = function () {
         $scope.config = createConfig();
+    };
+
+    $scope.noData = function () {
+        $scope.data = [];
     };
 
     $scope.toggleV = function () {

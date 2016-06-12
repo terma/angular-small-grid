@@ -34,6 +34,9 @@ $scope.config = {
   // optional if not specified just Loading... (doesn't support Angular markup)
   loaderTemplate: '<div>L...</div>',
 
+  // optional if not specified just No Data (doesn't support Angular markup)
+  noDataTemplate: '<span>No Data</span>',
+
   // optional, raised when columns order was changed
   onOrderChange: function () {},
 

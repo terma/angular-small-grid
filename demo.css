@@ -1,9 +1,19 @@
+body {
+    font-family: Tahoma;
+    font-size: small;
+}
+
 .angular-small-grid-header-cell {
-    background-color: white;
+    background-color: #d4e2f5;
+    text-align: center;
+    line-height: 30px;
 }
 
 .angular-small-grid-cell {
-    background-color: yellow;
+    border-right: 1px solid #d4e2f5;
+    border-bottom: 1px solid #d4e2f5;
+    line-height: 30px;
+    text-align: center;
 }
 
 .angular-small-grid-table {
@@ -12,12 +22,4 @@
     left: 50px;
     right: 50px;
     bottom: 50px;
-}
-
-.angular-small-grid-body {
-    position: absolute;
-    top: 30px;
-    left: 0;
-    right: 0;
-    bottom: 0;
 }

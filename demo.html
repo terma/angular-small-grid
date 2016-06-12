@@ -10,11 +10,13 @@
     <link rel="stylesheet" href="demo.css">
 </head>
 <body>
-<h1>Small Grid Demo</h1>
+<h1>Angular Small Grid Demo</h1>
+<a href="https://github.com/terma/angular-small-grid">GitHub</a>
 <button ng-click="pinLeft('column1')">PinLeft</button>
-<button ng-click="toggleV()">ToggleV</button>
+<button ng-click="toggleV()">Show/Hide Second Column</button>
 <button ng-click="reload()">Reload Data</button>
 <button ng-click="updateConfig()">Update Config</button>
+<button ng-click="noData()">No Data</button>
 <span>{{ columnFields }}</span>
 <angular-small-grid asg-config="config" asg-data="data"></angular-small-grid>
 </body>

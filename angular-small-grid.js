@@ -27,6 +27,10 @@
                         newConfig.loaderTemplate = '<div>Loading...</div>';
                     }
 
+                    if (!newConfig.noDataTemplate) {
+                        newConfig.noDataTemplate = '<div>No Data</div>';
+                    }
+
                     // empty default listener
                     if (!newConfig.onOrderChange) newConfig.onOrderChange = function () {
                     };
@@ -41,7 +45,8 @@
                 });
 
                 function removeData() {
-                    console.log('remove data');
+                    // console.log('remove data');
+                    hideNoData();
 
                     config.columns.forEach(function (column) {
                         findColumnDiv(column.field).empty();
@@ -60,14 +65,22 @@
                 }
 
                 function populateData() {
-                    console.log('populate table with data:');
-                    console.log(data);
+                    // console.log('populate table with data:');
+                    // console.log(data);
+
+                    hideNoData();
+
+                    config.columns.forEach(function (column) {
+                        findColumnDiv(column.field).empty();
+                    });
 
                     config.columns.forEach(function (column) {
                         populateColumn(column, findColumnDiv(column.field));
                     });
 
                     hideLoader();
+
+                    if (data && data.length === 0) showNoData();
                 }
 
                 function createCell(column, row) {
@@ -140,13 +153,26 @@
                     $('.angular-small-grid-table').append(loader);
                 }
 
+                function showNoData() {
+                    hideNoData();
+                    var noData = $(config.noDataTemplate);
+                    noData.attr('id', 'angular-small-grid-no-data');
+                    noData.css('top', config.headerHeight);
+                    noData.addClass('angular-small-grid-no-data');
+                    $('.angular-small-grid-table').append(noData);
+                }
+
                 function hideLoader() {
                     $('.angular-small-grid-loader').remove();
                 }
 
+                function hideNoData() {
+                    $('.angular-small-grid-no-data').remove();
+                }
+
                 function createTable() {
-                    console.log('create table with config:');
-                    console.log(config);
+                    // console.log('create table with config:');
+                    // console.log(config);
 
                     $('.angular-small-grid-header').empty();
                     $('.angular-small-grid-header-cell').remove();
@@ -156,6 +182,8 @@
                     showLoader();
 
                     var body = $('.angular-small-grid-body');
+                    body.css('top', config.headerHeight);
+
                     $('.angular-small-grid-body').scroll(function () {
                         var scrollLeft = body.scrollLeft();
                         $('.angular-small-grid-header-cell').eq(0).css('margin-left', -scrollLeft);
