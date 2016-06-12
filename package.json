@@ -1,6 +1,6 @@
 {
   "name": "angular-small-grid",
-  "description": "",
+  "description": "Simple and naive implementation of grid for Angular under MIT license",
   "version": "0.3.0",
   "author": "Artem Stasiuk <artem.stasuk@gmail.com>",
   "homepage": "http://terma.github.io/angular-small-grid/demo.html",
