@@ -1,11 +1,16 @@
 # angular-small-grid
 
-Licensed MIT
+Simple and naive implementation of grid for Angular under MIT license
 
 ## Features
 
+* Configurable columns and data
 * Reordable columns
 * Resizable columns
+* Pinnable columns
+* Loading message
+* No Data message
+* Store restore state of grid to ```localStorage```
 
 [Demo](http://terma.github.io/angular-small-grid/demo.html)
 
