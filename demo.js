@@ -89,6 +89,11 @@ app.controller('ctrl', function ($scope, $timeout) {
         $scope.data = [];
     };
 
+    $scope.resetStoredState = function () {
+        window.localStorage.removeItem('my-grid-settings');
+        $scope.config = createConfig();
+    };
+
     $scope.toggleV = function () {
         if (!$scope.angularSmallGridFindColumn('column1').visible) {
             $scope.angularSmallGridShowColumn('column1');

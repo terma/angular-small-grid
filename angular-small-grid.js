@@ -36,9 +36,6 @@
                     if (!newConfig.onOrderChange) newConfig.onOrderChange = function () {
                     };
 
-                    // before new config try to store old
-                    storeColumnSettings();
-
                     config = newConfig;
                     restoreColumnsSettings();
                     createTable();
@@ -125,6 +122,7 @@
                         var temp = config.columns[draggedIndex];
                         config.columns[draggedIndex] = config.columns[targetIndex];
                         config.columns[targetIndex] = temp;
+                        storeColumnSettings();
 
                         config.onOrderChange(draggedColumnField);
                         draggedColumnField = void 0;
@@ -206,6 +204,7 @@
                         if (resizeInProgress) {
                             var w = resizeInProgress.column.width + e.clientX - resizeInProgress.x;
                             resizeInProgress.column.width = resizeInProgress.column.width + e.clientX - resizeInProgress.x;
+                            storeColumnSettings();
                             resizeInProgress.element.css('width', resizeInProgress.column.width);
                             findColumnDiv(resizeInProgress.column.field).css('width', w);
                             $('.angular-small-grid-header').css('cursor', '');
@@ -292,6 +291,7 @@
                     var column = findColumn(field);
                     if (column.pinned || column.visible) return;
                     column.visible = true;
+                    storeColumnSettings();
 
                     var prevColumn = findPreviousColumn(column.field);
                     var nextColumn = findNextColumn(column.field);
@@ -312,6 +312,7 @@
                     var column = findColumn(field);
                     if (column.pinned || !column.visible) return;
                     column.visible = false;
+                    storeColumnSettings();
 
                     findColumnDiv(field).remove();
                     findHeadCellDiv(field).remove();
@@ -322,6 +323,7 @@
                     if (!column.visible || column.pinned) return;
 
                     column.pinned = 'left';
+                    storeColumnSettings();
 
                     var beforeLeft = sumWidthPinnedLeftBefore(field);
                     var allLeft = sumWidthPinnedLeft();
@@ -350,6 +352,7 @@
                     if (!column.visible || !column.pinned) return;
 
                     column.pinned = void 0;
+                    storeColumnSettings();
 
                     var sumLeft = sumWidthPinnedLeft();
 
@@ -382,6 +385,12 @@
                     }
                 };
 
+                /**
+                 * Find column from config.columns by column.field
+                 *
+                 * @param field - column.field
+                 * @returns {*} column from grid config or void 0
+                 */
                 $scope.angularSmallGridFindColumn = function (field) {
                     return findColumn(field);
                 };
@@ -426,10 +435,6 @@
                         window.localStorage.setItem(config.localStorageKey, JSON.stringify(configToStore));
                     }
                 }
-
-                $scope.$on('$destroy', function () {
-                    storeColumnSettings();
-                })
             }
         };
     }]);
