@@ -58,6 +58,7 @@ $scope.config = {
     field: 'fieldNameInDataObject',
     width: 122,
     visible: true,
+    minWidth: 222, // optional param by default 50px
     pinned: void 0, // could be 'left'
     
     // optional, support Angular

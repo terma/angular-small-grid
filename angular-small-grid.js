@@ -100,6 +100,7 @@
                     var headCell = $('<div class="angular-small-grid-header-cell" draggable="true"></div>');
 
                     headCell.on('dragstart', function (e) {
+                        draggedColumnField = void 0;
                         var field = $(e.target).data('field');
                         if (findColumn(field).pinned) e.preventDefault();
                         else draggedColumnField = field;
@@ -112,16 +113,19 @@
 
                         if (!draggedColumnField) return;
 
-                        var targetIndex = $(e.target).index();
-                        var columns = $('.angular-small-grid-column');
-                        var headerCells = $('.angular-small-grid-header-cell');
-                        $(headerCells[targetIndex]).before(findHeadCellDiv(draggedColumnField));
-                        $(columns[targetIndex]).before(findColumnDiv(draggedColumnField));
+                        var elementTargetIndex = $(e.target).index();
+                        var columnTargetIndex = countOfPinnedLeft() + elementTargetIndex;
+                        var targetField = config.columns[columnTargetIndex].field;
+                        if (draggedColumnField === targetField) return;
+
+                        $('.angular-small-grid-header-cell').eq(elementTargetIndex).before(findHeadCellDiv(draggedColumnField));
+                        $('.angular-small-grid-column').eq(elementTargetIndex).before(findColumnDiv(draggedColumnField));
 
                         var draggedIndex = findColumnIndex(draggedColumnField);
-                        var temp = config.columns[draggedIndex];
-                        config.columns[draggedIndex] = config.columns[targetIndex];
-                        config.columns[targetIndex] = temp;
+                        var draggedColumn = config.columns[draggedIndex];
+                        config.columns.splice(draggedIndex, 1); // remove column from old position
+                        var newTargetIndex = findColumnIndex(targetField);
+                        config.columns.splice(newTargetIndex, 0, draggedColumn); // add column before
                         storeColumnSettings();
 
                         config.onOrderChange(draggedColumnField);
@@ -140,7 +144,20 @@
                     var resizer = $('<div class="angular-small-grid-resizer"></div>');
                     resizer.mousedown(function (e) {
                         resizeInProgress = {element: headCell, x: e.clientX, column: column};
-                        $('.angular-small-grid-header').css('cursor', 'move');
+                        $('.angular-small-grid-header').addClass('angular-small-grid-resize-cursor');
+                        $(document).one('mouseup', function (e) {
+                            if (resizeInProgress) {
+                                var columnMinWidth = resizeInProgress.column.minWidth ? resizeInProgress.column.minWidth : 50;
+                                var width = Math.max(columnMinWidth, resizeInProgress.column.width + e.clientX - resizeInProgress.x);
+
+                                resizeInProgress.column.width = width;
+                                storeColumnSettings();
+                                resizeInProgress.element.css('width', width);
+                                findColumnDiv(resizeInProgress.column.field).css('width', width);
+                                $('.angular-small-grid-header').removeClass('angular-small-grid-resize-cursor');
+                                resizeInProgress = void 0;
+                            }
+                        });
                         e.preventDefault();
                     });
                     headCell.append(resizer);
@@ -199,19 +216,6 @@
                         $('.pinned-left').css('margin-top', -scrollTop);
                     });
 
-                    $('.angular-small-grid-header').off('mouseup');
-                    $('.angular-small-grid-header').mouseup(function (e) {
-                        if (resizeInProgress) {
-                            var w = resizeInProgress.column.width + e.clientX - resizeInProgress.x;
-                            resizeInProgress.column.width = resizeInProgress.column.width + e.clientX - resizeInProgress.x;
-                            storeColumnSettings();
-                            resizeInProgress.element.css('width', resizeInProgress.column.width);
-                            findColumnDiv(resizeInProgress.column.field).css('width', w);
-                            $('.angular-small-grid-header').css('cursor', '');
-                            resizeInProgress = void 0;
-                        }
-                    });
-
                     $('.angular-small-grid-header').css('height', config.headerHeight);
                     config.columns.forEach(function (column) {
                         if (!column.visible) return;
@@ -233,6 +237,14 @@
                     var r = 0;
                     config.columns.forEach(function (column) {
                         if (column.pinned === 'left') r += column.width;
+                    });
+                    return r;
+                }
+
+                function countOfPinnedLeft() {
+                    var r = 0;
+                    config.columns.forEach(function (column) {
+                        if (column.pinned === 'left') r++;
                     });
                     return r;
                 }

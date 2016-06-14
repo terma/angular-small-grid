@@ -22,6 +22,10 @@
     cursor: col-resize;
 }
 
+.angular-small-grid-resize-cursor * {
+    cursor: col-resize;
+}
+
 .angular-small-grid-loader {
     position: absolute;
     text-align: center;
