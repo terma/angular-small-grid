@@ -86,6 +86,9 @@
                     var cell = $('<div class="angular-small-grid-cell"></div>');
                     cell.html(config.cellTemplate(column, row[column.field]));
                     cell.css('height', config.cellHeight);
+                    if (config.onCellClick) cell.click(function (e) {
+                        config.onCellClick(column, row, e);
+                    });
                     return cell;
                 }
 
@@ -116,7 +119,7 @@
                         currentHeadCell.find('.angular-small-grid-cell-to-drag').show();
                         // e.preventDefault();
                     });
-                    headCell.on('dragend', function (e) {
+                    headCell.on('dragend', function () {
                         $('.angular-small-grid-cell-to-drag').hide();
                     });
                     headCell.on('dragover', function (e) {

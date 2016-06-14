@@ -53,6 +53,9 @@ $scope.config = {
   // optional, raised when columns order was changed
   onOrderChange: function () {},
 
+  // optional, raised when cell clicked by mouse
+  onCellClick: function (column, row, event) {},
+
   columns: [{
     name: 'Visible Name',
     field: 'fieldNameInDataObject',

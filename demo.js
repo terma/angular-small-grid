@@ -23,6 +23,13 @@ app.controller('ctrl', function ($scope, $timeout) {
                 });
             },
 
+            onCellClick: function (column, row, e) {
+                console.log('clicked:');
+                console.log(column);
+                console.log(row);
+                console.log(e);
+            },
+
             columns: [{
                 field: 'selector',
                 visible: true,
