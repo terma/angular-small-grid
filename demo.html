@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="demo.css">
 </head>
 <body>
+
+<script type="text/ng-template" id="headerTemplateChrome">
+    <p>{{ ::column.name }} {{ ::chromeVersion }}</p>
+</script>
+
 <h1>Angular Small Grid Demo</h1>
 <a href="https://github.com/terma/angular-small-grid">GitHub</a>
 <button ng-click="pinLeft('column1')">Pin Firefox</button>

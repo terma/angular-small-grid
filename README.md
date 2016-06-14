@@ -70,9 +70,14 @@ $scope.config = {
     pinned: void 0, // optional, could be 'left'
 
     fixedWidth: true, // optional to disable resizing for column
-    
+
+    // header template executes in dedicated (parent is your scope) scope with injected ```column```
+
     // optional, support Angular
-    headerTemplate: '<span>{{ ::countOfColumns }}</span>'
+    headerTemplate: '<span>{{ ::countOfColumns }}</span>',
+
+    // optional, uses Angular $templateCache, has priority on headerTemplate
+    headerTemplateUrl: 'url'
   }]
 };
 ```

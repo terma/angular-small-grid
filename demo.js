@@ -34,15 +34,28 @@ app.controller('ctrl', function ($scope, $timeout) {
                 field: 'selector',
                 visible: true,
                 width: 20,
+                fixedWidth: true,
                 pinned: 'left',
                 headerTemplate: '<span>*</span>'
             }]
         };
 
         // more columns
-        config.columns.push({field: 'column0', name: 'IE', visible: true, width: 100, fixedWidth: true});
+        config.columns.push({
+            field: 'column0',
+            name: 'IE',
+            visible: true,
+            width: 100,
+            headerTemplate: '<span>{{::column.name }} {{::ieVersion}}</span>'
+        });
         config.columns.push({field: 'column1', name: 'Firefox', visible: true, width: 100});
-        config.columns.push({field: 'column2', name: 'Chrome', visible: true, width: 100});
+        config.columns.push({
+            field: 'column2',
+            name: 'Chrome',
+            visible: true,
+            width: 100,
+            headerTemplateUrl: 'headerTemplateChrome'
+        });
         config.columns.push({field: 'column3', name: 'Opera', visible: true, width: 100});
         config.columns.push({field: 'column4', name: 'Safari', visible: true, width: 100});
         for (var i = 5; i < 30; i++) {
@@ -55,14 +68,13 @@ app.controller('ctrl', function ($scope, $timeout) {
             });
         }
 
-        config.columns[1].headerTemplate = '<span>IE {{::pp}}</span>';
-
         return config;
     }
 
     $scope.config = createConfig();
 
-    $scope.pp = 12;
+    $scope.ieVersion = 11;
+    $scope.chromeVersion = 50;
 
     function createData() {
         $scope.data = [];
