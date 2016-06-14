@@ -8,7 +8,7 @@ app.controller('ctrl', function ($scope, $timeout) {
             localStorageKey: 'my-grid-settings',
 
             cellHeight: 30,
-            headerHeight: 30,
+            headerHeight: 60,
 
             cellTemplate: function (column, value) {
                 if (column.field === 'selector') return '';
@@ -50,7 +50,8 @@ app.controller('ctrl', function ($scope, $timeout) {
                 field: 'column' + i,
                 name: 'Column ' + i,
                 visible: true,
-                width: 100
+                width: 100,
+                headerTemplate: '<div>Column' + i + '</div><div style="padding-left: 5px; padding-right: 5px;"><input type="text" style="width: 100%;"></div>'
             });
         }
 

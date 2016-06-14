@@ -11,6 +11,7 @@
 .angular-small-grid-header-cell {
     display: inline-block;
     position: relative;
+    vertical-align: top;
 }
 
 .angular-small-grid-resizer {
