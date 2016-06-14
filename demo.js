@@ -40,7 +40,7 @@ app.controller('ctrl', function ($scope, $timeout) {
         };
 
         // more columns
-        config.columns.push({field: 'column0', name: 'IE', visible: true, width: 100});
+        config.columns.push({field: 'column0', name: 'IE', visible: true, width: 100, fixedWidth: true});
         config.columns.push({field: 'column1', name: 'Firefox', visible: true, width: 100});
         config.columns.push({field: 'column2', name: 'Chrome', visible: true, width: 100});
         config.columns.push({field: 'column3', name: 'Opera', visible: true, width: 100});
@@ -55,7 +55,7 @@ app.controller('ctrl', function ($scope, $timeout) {
             });
         }
 
-        config.columns[1].headerTemplate = '<span>Field {{::pp}}</span>';
+        config.columns[1].headerTemplate = '<span>IE {{::pp}}</span>';
 
         return config;
     }

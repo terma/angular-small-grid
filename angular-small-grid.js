@@ -170,26 +170,28 @@
                     var cellToDrag = $('<div class="angular-small-grid-cell-to-drag"></div>');
                     headCell.append(cellToDrag);
 
-                    var resizer = $('<div class="angular-small-grid-resizer"></div>');
-                    resizer.mousedown(function (e) {
-                        resizeInProgress = {element: headCell, x: e.clientX, column: column};
-                        $('.angular-small-grid-header').addClass('angular-small-grid-resize-cursor');
-                        $(document).one('mouseup', function (e) {
-                            if (resizeInProgress) {
-                                var columnMinWidth = resizeInProgress.column.minWidth ? resizeInProgress.column.minWidth : 50;
-                                var width = Math.max(columnMinWidth, resizeInProgress.column.width + e.clientX - resizeInProgress.x);
+                    if (!column.fixedWidth) {
+                        var resizer = $('<div class="angular-small-grid-resizer"></div>');
+                        resizer.mousedown(function (e) {
+                            resizeInProgress = {element: headCell, x: e.clientX, column: column};
+                            $('.angular-small-grid-header').addClass('angular-small-grid-resize-cursor');
+                            $(document).one('mouseup', function (e) {
+                                if (resizeInProgress) {
+                                    var columnMinWidth = resizeInProgress.column.minWidth ? resizeInProgress.column.minWidth : 50;
+                                    var width = Math.max(columnMinWidth, resizeInProgress.column.width + e.clientX - resizeInProgress.x);
 
-                                resizeInProgress.column.width = width;
-                                storeColumnSettings();
-                                resizeInProgress.element.css('width', width);
-                                findColumnDiv(resizeInProgress.column.field).css('width', width);
-                                $('.angular-small-grid-header').removeClass('angular-small-grid-resize-cursor');
-                                resizeInProgress = void 0;
-                            }
+                                    resizeInProgress.column.width = width;
+                                    storeColumnSettings();
+                                    resizeInProgress.element.css('width', width);
+                                    findColumnDiv(resizeInProgress.column.field).css('width', width);
+                                    $('.angular-small-grid-header').removeClass('angular-small-grid-resize-cursor');
+                                    resizeInProgress = void 0;
+                                }
+                            });
+                            e.preventDefault();
                         });
-                        e.preventDefault();
-                    });
-                    headCell.append(resizer);
+                        headCell.append(resizer);
+                    }
 
                     headCell.css('width', column.width);
                     headCell.css('height', config.headerHeight);

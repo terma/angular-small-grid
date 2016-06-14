@@ -1,6 +1,6 @@
 # angular-small-grid
 
-Simple and naive implementation of grid for Angular under MIT license
+Simple and naive implementation of grid for Angular. Tested: IE 11 and Chrome 50
 
 ## Features
 
@@ -14,12 +14,15 @@ Simple and naive implementation of grid for Angular under MIT license
 
 [Demo](http://terma.github.io/angular-small-grid/demo.html)
 
+## License
+
+MIT
+
 ## How To Install
 
 ```bash
 npm i angular-small-grid
 ```
-
 
 ## How to Use 
 
@@ -61,8 +64,12 @@ $scope.config = {
     field: 'fieldNameInDataObject',
     width: 122,
     visible: true,
+
     minWidth: 222, // optional param by default 50px
-    pinned: void 0, // could be 'left'
+
+    pinned: void 0, // optional, could be 'left'
+
+    fixedWidth: true, // optional to disable resizing for column
     
     // optional, support Angular
     headerTemplate: '<span>{{ ::countOfColumns }}</span>'
