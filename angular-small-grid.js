@@ -160,6 +160,13 @@
                         headCell.html(column.name);
                     }
 
+                    headCell.find('input').on('mouseenter', function () {
+                        headCell.attr('draggable', '');
+                    });
+                    headCell.find('input').on('mouseleave', function () {
+                        headCell.attr('draggable', 'true');
+                    });
+
                     var cellToDrag = $('<div class="angular-small-grid-cell-to-drag"></div>');
                     headCell.append(cellToDrag);
 
