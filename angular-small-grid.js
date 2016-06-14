@@ -6,8 +6,9 @@
             link: function ($scope, $element, $attrs) {
                 var config = void 0;
                 var data = void 0;
-                var draggedColumnField = void 0;
                 var resizeInProgress = void 0;
+
+                var draggedColumnField = void 0;
 
                 $scope.$watch($attrs.asgData, function (newData) {
                     data = newData;
@@ -96,6 +97,10 @@
                     return columnDiv;
                 }
 
+                function findHeaderCellAsParent(element) {
+                    return $(element).closest('.angular-small-grid-header-cell');
+                }
+
                 function createHeaderCell(column) {
                     var headCell = $('<div class="angular-small-grid-header-cell" draggable="true"></div>');
 
@@ -105,6 +110,15 @@
                         if (findColumn(field).pinned) e.preventDefault();
                         else draggedColumnField = field;
                     });
+                    headCell.on('dragenter', function (e) {
+                        var currentHeadCell = findHeaderCellAsParent(e.target);
+                        $('.angular-small-grid-cell-to-drag').hide();
+                        currentHeadCell.find('.angular-small-grid-cell-to-drag').show();
+                        // e.preventDefault();
+                    });
+                    headCell.on('dragend', function (e) {
+                        $('.angular-small-grid-cell-to-drag').hide();
+                    });
                     headCell.on('dragover', function (e) {
                         e.preventDefault();
                     });
@@ -113,7 +127,9 @@
 
                         if (!draggedColumnField) return;
 
-                        var elementTargetIndex = $(e.target).index();
+                        $('.angular-small-grid-cell-to-drag').hide();
+
+                        var elementTargetIndex = findHeaderCellAsParent(e.target).index();
                         var columnTargetIndex = countOfPinnedLeft() + elementTargetIndex;
                         var targetField = config.columns[columnTargetIndex].field;
                         if (draggedColumnField === targetField) return;
@@ -140,6 +156,9 @@
                     } else {
                         headCell.html(column.name);
                     }
+
+                    var cellToDrag = $('<div class="angular-small-grid-cell-to-drag"></div>');
+                    headCell.append(cellToDrag);
 
                     var resizer = $('<div class="angular-small-grid-resizer"></div>');
                     resizer.mousedown(function (e) {

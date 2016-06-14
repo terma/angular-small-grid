@@ -26,6 +26,16 @@
     cursor: col-resize;
 }
 
+.angular-small-grid-cell-to-drag {
+    background-color: #7186ae;
+    position: absolute;
+    left: -1px;
+    width: 5px;
+    top: 0;
+    bottom: 0;
+    display: none;
+}
+
 .angular-small-grid-loader {
     position: absolute;
     text-align: center;
