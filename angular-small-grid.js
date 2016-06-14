@@ -346,6 +346,7 @@
                     var headCellDiv = findHeadCellDiv(field).detach();
                     var columnDiv = findColumnDiv(field).detach();
 
+                    columnDiv.css('margin-top', -$('.angular-small-grid-body').scrollTop());
                     columnDiv.css('position', 'absolute');
                     columnDiv.css('top', config.headerHeight);
                     columnDiv.css('left', beforeLeft);
@@ -380,6 +381,7 @@
                     var columnDiv = findColumnDiv(field);
                     columnDiv.detach();
                     columnDiv.removeClass('pinned-left');
+                    columnDiv.css('margin-top', '');
                     columnDiv.css('position', '');
                     columnDiv.css('top', '');
                     columnDiv.css('left', '');
