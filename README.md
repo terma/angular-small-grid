@@ -33,6 +33,12 @@ npm i angular-small-grid
 <link rel="stylesheet" href="angular-small-grid.css">
 ```
 
+### Add Grid on Page
+
+```js
+<angular-small-grid sg-config="smallGridConfig" sg-data="smallGridData"></angular-small-grid>
+```
+
 ### Set Grid Config
 
 ```js
@@ -69,9 +75,9 @@ $scope.config = {
 
     pinned: void 0, // optional, could be 'left'
 
-    fixedWidth: true, // optional to disable resizing for column
+    fixedWidth: true, // optional to disable column resizing
 
-    // header template executes in dedicated (parent is your scope) scope with injected ```column```
+    // header template executes in dedicated (parent is your scope) scope with injected column
 
     // optional, support Angular
     headerTemplate: '<span>{{ ::countOfColumns }}</span>',
@@ -88,8 +94,32 @@ $scope.config = {
 $scope.data = [{field1: 12}];
 ```
 
-### Add Grid to Page
+### API
+
+A few useful functions related to grid will be injected in your scope
 
 ```js
-<small-grid sg-config="smallGridConfig" sg-data="smallGridData"></small-grid>
+
+    // Pin column to left border of grid
+    // Call for pinned column does nothing
+    // field is column.field
+    // result void 0
+    $scope.angularSmallGridPinLeft(field);
+
+    // Unpin column by column.field
+    // For unpinned does nothing
+    // result void 0
+    $scope.angularSmallGridUnpinLeft(field);
+
+    // Return column from config by column.field
+    // or void 0
+    $scope.angularSmallGridFindColumn(field);
+
+    // Show column on grid by column.field if hidden
+    // otherwise do nothing
+    $scope.angularSmallGridShowColumn(field);
+
+    // Hide column on grid by column.field if hidden
+    // otherwise do nothing
+    $scope.angularSmallGridHideColumn(field);
 ```
