@@ -262,10 +262,7 @@
                             var columnDiv = createColumn(column);
                             body.append(columnDiv);
 
-                            if (column.pinned === 'left') {
-                                column.pinned = void 0;
-                                $scope.angularSmallGridPinLeft(column.field);
-                            }
+                            if (column.pinned === 'left') pinToLeft(column.field);
                         });
                     }
 
@@ -366,13 +363,7 @@
                         findHeadCellDiv(field).remove();
                     };
 
-                    $scope.angularSmallGridPinLeft = function (field) {
-                        var column = findColumn(field);
-                        if (!column.visible || column.pinned) return;
-
-                        column.pinned = 'left';
-                        storeColumnSettings();
-
+                    function pinToLeft(field) {
                         var beforeLeft = sumWidthPinnedLeftBefore(field);
                         var allLeft = sumWidthPinnedLeft();
 
@@ -394,6 +385,15 @@
                         headCellDiv.css('top', 0);
                         headCellDiv.css('left', beforeLeft);
                         $('.angular-small-grid-table').append(headCellDiv);
+                    }
+
+                    $scope.angularSmallGridPinLeft = function (field) {
+                        var column = findColumn(field);
+                        if (!column.visible || column.pinned) return;
+
+                        column.pinned = 'left';
+                        storeColumnSettings();
+                        pinToLeft(field);
                     };
 
                     $scope.angularSmallGridUnpinLeft = function (field) {
