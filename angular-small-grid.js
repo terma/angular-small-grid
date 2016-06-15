@@ -133,20 +133,19 @@
 
                             $('.angular-small-grid-cell-to-drag').hide();
 
-                            var elementTargetIndex = findHeaderCellAsParent(e.target).index();
-                            var columnTargetIndex = countOfPinnedLeft() + elementTargetIndex;
-                            var targetColumn = config.columns[columnTargetIndex];
-                            var targetField = targetColumn.field;
+                            var targetElement = findHeaderCellAsParent(e.target);
+                            var targetField = targetElement.data('field');
+                            var targetColumn = findColumn(targetField);
                             if (targetColumn.pinned || draggedColumnField === targetField) return;
 
-                            $('.angular-small-grid-header-cell').eq(elementTargetIndex).before(findHeadCellDiv(draggedColumnField));
-                            $('.angular-small-grid-column').eq(elementTargetIndex).before(findColumnDiv(draggedColumnField));
+                            findHeadCellDiv(targetField).before(findHeadCellDiv(draggedColumnField));
+                            findColumnDiv(targetField).before(findColumnDiv(draggedColumnField));
 
                             var draggedIndex = findColumnIndex(draggedColumnField);
                             var draggedColumn = config.columns[draggedIndex];
                             config.columns.splice(draggedIndex, 1); // remove column from old position
-                            var newTargetIndex = findColumnIndex(targetField);
-                            config.columns.splice(newTargetIndex, 0, draggedColumn); // add column before
+                            var targetIndex = findColumnIndex(targetField);
+                            config.columns.splice(targetIndex, 0, draggedColumn); // add column before
                             storeColumnSettings();
 
                             config.onOrderChange(draggedColumnField);
