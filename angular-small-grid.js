@@ -88,7 +88,9 @@
                         cell.html(config.cellTemplate(column, row[column.field]));
                         cell.css('height', config.cellHeight);
                         if (config.onCellClick) cell.click(function (e) {
-                            config.onCellClick(column, row, e);
+                            $scope.$apply(function () {
+                                config.onCellClick(column, row, e);
+                            });
                         });
                         return cell;
                     }
@@ -98,6 +100,7 @@
                         columnDiv.attr('id', 'angular-small-grid-column-' + column.field);
                         columnDiv.css('width', column.width);
                         columnDiv.css('display', 'inline-block');
+                        if (column.class) columnDiv.addClass(column.class);
                         return columnDiv;
                     }
 
@@ -112,7 +115,10 @@
                             draggedColumnField = void 0;
                             var field = $(e.target).data('field');
                             if (findColumn(field).pinned) e.preventDefault();
-                            else draggedColumnField = field;
+                            else {
+                                draggedColumnField = field;
+                                // e.originalEvent.dataTransfer.cursor
+                            }
                         });
                         headCell.on('dragenter', function (e) {
                             var currentHeadCell = findHeaderCellAsParent(e.target);
@@ -147,10 +153,11 @@
                             var targetIndex = findColumnIndex(targetField);
                             config.columns.splice(targetIndex, 0, draggedColumn); // add column before
                             storeColumnSettings();
-
-                            config.onOrderChange(draggedColumnField);
                             draggedColumnField = void 0;
-                            $scope.$apply();
+
+                            $scope.$apply(function () {
+                                config.onOrderChange(draggedColumnField);
+                            });
                         });
 
                         headCell.attr('id', 'angular-small-grid-header-cell-' + column.field);
@@ -164,7 +171,10 @@
                         } else {
                             headCell.html(column.name);
                         }
+                        
+                        if (column.class) headCell.addClass(column.class);
 
+                        // fix to disable drag when cursor on input to be able select instead of drag
                         headCell.find('input').on('mouseenter', function () {
                             headCell.attr('draggable', '');
                         });

@@ -23,3 +23,7 @@ body {
     right: 50px;
     bottom: 50px;
 }
+
+.special-column {
+    background-color: rgba(211, 255, 147, 0.52) !important;
+}

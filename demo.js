@@ -48,7 +48,7 @@ app.controller('ctrl', function ($scope, $timeout) {
             width: 100,
             headerTemplate: '<span>{{::column.name }} {{::ieVersion}}</span>'
         });
-        config.columns.push({field: 'column1', name: 'Firefox', visible: true, width: 100});
+        config.columns.push({field: 'column1', name: 'Firefox', visible: true, width: 100, class: 'special-column'});
         config.columns.push({
             field: 'column2',
             name: 'Chrome',

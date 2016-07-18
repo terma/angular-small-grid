@@ -77,6 +77,8 @@ $scope.config = {
 
     fixedWidth: true, // optional to disable column resizing
 
+    class: '' // optional CSS class name will be assigned to column and headerCell
+
     // header template executes in dedicated (parent is your scope) scope with injected column
 
     // optional, support Angular
