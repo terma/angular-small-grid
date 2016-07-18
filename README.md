@@ -125,3 +125,28 @@ A few useful functions related to grid will be injected in your scope
     // otherwise do nothing
     $scope.angularSmallGridHideColumn(field);
 ```
+
+### Styling
+
+CSS model
+
+```html
+<div class="angular-small-grid-table">
+    <div class="angular-small-grid-header">
+        <div class="angular-small-grid-header-cell"></div>
+        <!-- more column headers -->
+    </div>
+
+    <div class="angular-small-grid-body">
+        <div class="angular-small-grid-column">
+            <div class="angular-small-grid-cell"></div>
+            <!-- more cells -->
+        </div>
+        <!-- more columns data -->
+    </div>
+
+    <!-- all pinned columns -->
+    <div class="angular-small-grid-header-cell"></div>
+    <div class="angular-small-grid-column pinned-left"></div>
+</div>
+```
