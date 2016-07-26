@@ -9,6 +9,10 @@
                     var data = void 0;
                     var resizeInProgress = void 0;
 
+                    // cache elements
+                    var angularSmallGridBody = $($element).find('.angular-small-grid-body');
+                    var angularSmallGridHeader = $($element).find('.angular-small-grid-header');
+
                     var draggedColumnField = void 0;
 
                     $scope.$watch($attrs.asgData, function (newData) {
@@ -57,6 +61,7 @@
 
                     function populateColumn(column, columnDiv) {
                         var cells = [];
+                        // todo check if data is present
                         data.forEach(function (rowData) {
                             var cell = createCell(column, rowData);
                             cells.push(cell);
@@ -111,6 +116,23 @@
                     function createHeaderCell(column) {
                         var headCell = $('<div class="angular-small-grid-header-cell" draggable="true"></div>');
 
+                        var angularSmallGridBodyLeft = void 0;
+                        var windowRight = void 0;
+                        var offset = 100;
+                        var step = 15;
+
+                        headCell.on('drag', function (e) {
+                            function scrollHorizontally(step) {
+                                var scrollX = angularSmallGridBody.scrollLeft();
+                                angularSmallGridBody.scrollLeft(scrollX + step);
+                            }
+
+                            var xpos = e.originalEvent.clientX;
+                            if (xpos < angularSmallGridBodyLeft + offset) scrollHorizontally(-step);
+                            // todo possible defect when table size less than windowRight - offset
+                            if (xpos > windowRight - offset) scrollHorizontally(step);
+                        });
+
                         headCell.on('dragstart', function (e) {
                             draggedColumnField = void 0;
                             var field = $(e.target).data('field');
@@ -119,6 +141,9 @@
                                 draggedColumnField = field;
                                 // e.originalEvent.dataTransfer.cursor
                             }
+
+                            angularSmallGridBodyLeft = angularSmallGridBody.offset().left;
+                            windowRight = $(window).width();
                         });
                         headCell.on('dragenter', function (e) {
                             var currentHeadCell = findHeaderCellAsParent(e.target);
@@ -171,7 +196,7 @@
                         } else {
                             headCell.html(column.name);
                         }
-                        
+
                         if (column.class) headCell.addClass(column.class);
 
                         // fix to disable drag when cursor on input to be able select instead of drag
@@ -189,7 +214,7 @@
                             var resizer = $('<div class="angular-small-grid-resizer"></div>');
                             resizer.mousedown(function (e) {
                                 resizeInProgress = {element: headCell, x: e.clientX, column: column};
-                                $('.angular-small-grid-header').addClass('angular-small-grid-resize-cursor');
+                                angularSmallGridHeader.addClass('angular-small-grid-resize-cursor');
                                 $(document).one('mouseup', function (e) {
                                     if (resizeInProgress) {
                                         var columnMinWidth = resizeInProgress.column.minWidth ? resizeInProgress.column.minWidth : 50;
@@ -199,7 +224,7 @@
                                         storeColumnSettings();
                                         resizeInProgress.element.css('width', width);
                                         findColumnDiv(resizeInProgress.column.field).css('width', width);
-                                        $('.angular-small-grid-header').removeClass('angular-small-grid-resize-cursor');
+                                        angularSmallGridHeader.removeClass('angular-small-grid-resize-cursor');
                                         resizeInProgress = void 0;
                                     }
                                 });
@@ -244,33 +269,32 @@
                         // console.log('create table with config:');
                         // console.log(config);
 
-                        $('.angular-small-grid-header').empty();
+                        angularSmallGridHeader.empty();
                         $('.angular-small-grid-header-cell').remove();
-                        $('.angular-small-grid-body').empty();
+                        angularSmallGridBody.empty();
                         $('.angular-small-grid-column').remove();
 
                         showLoader();
 
-                        var body = $('.angular-small-grid-body');
-                        body.css('top', config.headerHeight);
+                        angularSmallGridBody.css('top', config.headerHeight);
 
-                        $('.angular-small-grid-body').scroll(function () {
-                            var scrollLeft = body.scrollLeft();
+                        angularSmallGridBody.scroll(function () {
+                            var scrollLeft = angularSmallGridBody.scrollLeft();
                             $('.angular-small-grid-header-cell').eq(0).css('margin-left', -scrollLeft);
 
-                            var scrollTop = body.scrollTop();
+                            var scrollTop = angularSmallGridBody.scrollTop();
                             $('.pinned-left').css('margin-top', -scrollTop);
                         });
 
-                        $('.angular-small-grid-header').css('height', config.headerHeight);
+                        angularSmallGridHeader.css('height', config.headerHeight);
                         config.columns.forEach(function (column) {
                             if (!column.visible) return;
 
                             var headCell = createHeaderCell(column);
-                            $('.angular-small-grid-header').append(headCell);
+                            angularSmallGridHeader.append(headCell);
 
                             var columnDiv = createColumn(column);
-                            body.append(columnDiv);
+                            angularSmallGridBody.append(columnDiv);
 
                             if (column.pinned === 'left') pinToLeft(column.field);
                         });
@@ -280,14 +304,6 @@
                         var r = 0;
                         config.columns.forEach(function (column) {
                             if (column.pinned === 'left') r += column.width;
-                        });
-                        return r;
-                    }
-
-                    function countOfPinnedLeft() {
-                        var r = 0;
-                        config.columns.forEach(function (column) {
-                            if (column.pinned === 'left') r++;
                         });
                         return r;
                     }
@@ -320,11 +336,13 @@
 
                     function findPreviousColumn(field) {
                         for (var c = 1; c < config.columns.length; c++) {
+                            // todo find previously visible column
                             if (config.columns[c].field === field) return config.columns[c - 1];
                         }
                     }
 
                     function findNextColumn(field) {
+                        // todo find next visible column
                         for (var c = 0; c < config.columns.length - 1; c++) {
                             if (config.columns[c].field === field) return config.columns[c + 1];
                         }
@@ -377,13 +395,13 @@
                         var beforeLeft = sumWidthPinnedLeftBefore(field);
                         var allLeft = sumWidthPinnedLeft();
 
-                        $('.angular-small-grid-header').css('margin-left', allLeft);
-                        $('.angular-small-grid-body').css('margin-left', allLeft);
+                        angularSmallGridHeader.css('margin-left', allLeft);
+                        angularSmallGridBody.css('margin-left', allLeft);
 
                         var headCellDiv = findHeadCellDiv(field).detach();
                         var columnDiv = findColumnDiv(field).detach();
 
-                        columnDiv.css('margin-top', -$('.angular-small-grid-body').scrollTop());
+                        columnDiv.css('margin-top', -angularSmallGridBody.scrollTop());
                         columnDiv.css('position', 'absolute');
                         columnDiv.css('top', config.headerHeight);
                         columnDiv.css('left', beforeLeft);
@@ -415,8 +433,8 @@
 
                         var sumLeft = sumWidthPinnedLeft();
 
-                        $('.angular-small-grid-header').css('margin-left', sumLeft);
-                        $('.angular-small-grid-body').css('margin-left', sumLeft);
+                        angularSmallGridHeader.css('margin-left', sumLeft);
+                        angularSmallGridBody.css('margin-left', sumLeft);
 
                         var headCellDiv = findHeadCellDiv(field);
                         headCellDiv.detach();
