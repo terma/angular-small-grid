@@ -53,10 +53,15 @@
                         hideNoData();
 
                         config.columns.forEach(function (column) {
-                            findColumnDiv(column.field).empty();
+                            removeColumnData(column.field);
                         });
 
                         showLoader();
+                    }
+
+                    function removeColumnData(field) {
+                        var columnDiv = findColumnDiv(field)[0];
+                        if (columnDiv) columnDiv.innerHTML = '';
                     }
 
                     function populateColumn(column, columnDiv) {
@@ -76,7 +81,7 @@
                         hideNoData();
 
                         config.columns.forEach(function (column) {
-                            findColumnDiv(column.field).empty();
+                            removeColumnData(column.field);
                         });
 
                         config.columns.forEach(function (column) {
@@ -89,10 +94,11 @@
                     }
 
                     function createCell(column, row) {
-                        var cell = $('<div class="angular-small-grid-cell"></div>');
-                        cell.html(config.cellTemplate(column, row[column.field]));
-                        cell.css('height', config.cellHeight);
-                        if (config.onCellClick) cell.click(function (e) {
+                        var cell = document.createElement('div');
+                        cell.className = 'angular-small-grid-cell';
+                        cell.innerHTML = config.cellTemplate(column, row[column.field]);
+                        cell.style.height = config.cellHeight;
+                        if (config.onCellClick) cell.addEventListener('click', function (e) {
                             $scope.$apply(function () {
                                 config.onCellClick(column, row, e);
                             });
@@ -121,69 +127,78 @@
                         var offset = 100;
                         var step = 15;
 
-                        headCell.on('drag', function (e) {
-                            function scrollHorizontally(step) {
-                                var scrollX = angularSmallGridBody.scrollLeft();
-                                angularSmallGridBody.scrollLeft(scrollX + step);
-                            }
+                        if (!config.disableColumnDrag) {
+                            headCell.on('drag', function (e) {
+                                function scrollHorizontally(step) {
+                                    var scrollX = angularSmallGridBody.scrollLeft();
+                                    angularSmallGridBody.scrollLeft(scrollX + step);
+                                }
 
-                            var xpos = e.originalEvent.clientX;
-                            if (xpos < angularSmallGridBodyLeft + offset) scrollHorizontally(-step);
-                            // todo possible defect when table size less than windowRight - offset
-                            if (xpos > windowRight - offset) scrollHorizontally(step);
-                        });
-
-                        headCell.on('dragstart', function (e) {
-                            draggedColumnField = void 0;
-                            var field = $(e.target).data('field');
-                            if (findColumn(field).pinned) e.preventDefault();
-                            else {
-                                draggedColumnField = field;
-                                // e.originalEvent.dataTransfer.cursor
-                            }
-
-                            angularSmallGridBodyLeft = angularSmallGridBody.offset().left;
-                            windowRight = $(window).width();
-                        });
-                        headCell.on('dragenter', function (e) {
-                            var currentHeadCell = findHeaderCellAsParent(e.target);
-                            $('.angular-small-grid-cell-to-drag').hide();
-                            currentHeadCell.find('.angular-small-grid-cell-to-drag').show();
-                            // e.preventDefault();
-                        });
-                        headCell.on('dragend', function () {
-                            $('.angular-small-grid-cell-to-drag').hide();
-                        });
-                        headCell.on('dragover', function (e) {
-                            e.preventDefault();
-                        });
-                        headCell.on('drop', function (e) {
-                            e.preventDefault();
-
-                            if (!draggedColumnField) return;
-
-                            $('.angular-small-grid-cell-to-drag').hide();
-
-                            var targetElement = findHeaderCellAsParent(e.target);
-                            var targetField = targetElement.data('field');
-                            var targetColumn = findColumn(targetField);
-                            if (targetColumn.pinned || draggedColumnField === targetField) return;
-
-                            findHeadCellDiv(targetField).before(findHeadCellDiv(draggedColumnField));
-                            findColumnDiv(targetField).before(findColumnDiv(draggedColumnField));
-
-                            var draggedIndex = findColumnIndex(draggedColumnField);
-                            var draggedColumn = config.columns[draggedIndex];
-                            config.columns.splice(draggedIndex, 1); // remove column from old position
-                            var targetIndex = findColumnIndex(targetField);
-                            config.columns.splice(targetIndex, 0, draggedColumn); // add column before
-                            storeColumnSettings();
-                            draggedColumnField = void 0;
-
-                            $scope.$apply(function () {
-                                config.onOrderChange(draggedColumnField);
+                                var xpos = e.originalEvent.clientX;
+                                if (xpos < angularSmallGridBodyLeft + offset) scrollHorizontally(-step);
+                                // todo possible defect when table size less than windowRight - offset
+                                if (xpos > windowRight - offset) scrollHorizontally(step);
                             });
-                        });
+                            headCell.on('dragstart', function (e) {
+                                draggedColumnField = void 0;
+                                var field = $(e.target).data('field');
+                                if (findColumn(field).pinned) e.preventDefault();
+                                else {
+                                    draggedColumnField = field;
+                                    // e.originalEvent.dataTransfer.cursor
+                                }
+
+                                angularSmallGridBodyLeft = angularSmallGridBody.offset().left;
+                                windowRight = $(window).width();
+                            });
+                            headCell.on('dragenter', function (e) {
+                                var currentHeadCell = findHeaderCellAsParent(e.target);
+                                $('.angular-small-grid-cell-to-drag').hide();
+                                currentHeadCell.find('.angular-small-grid-cell-to-drag').show();
+                                // e.preventDefault();
+                            });
+                            headCell.on('dragend', function () {
+                                $('.angular-small-grid-cell-to-drag').hide();
+                            });
+                            headCell.on('dragover', function (e) {
+                                e.preventDefault();
+                            });
+                            headCell.on('drop', function (e) {
+                                e.preventDefault();
+
+                                if (!draggedColumnField) return;
+
+                                $('.angular-small-grid-cell-to-drag').hide();
+
+                                var targetElement = findHeaderCellAsParent(e.target);
+                                var targetField = targetElement.data('field');
+                                var targetColumn = findColumn(targetField);
+                                if (targetColumn.pinned || draggedColumnField === targetField) return;
+
+                                findHeadCellDiv(targetField).before(findHeadCellDiv(draggedColumnField));
+                                findColumnDiv(targetField).before(findColumnDiv(draggedColumnField));
+
+                                var draggedIndex = findColumnIndex(draggedColumnField);
+                                var draggedColumn = config.columns[draggedIndex];
+                                config.columns.splice(draggedIndex, 1); // remove column from old position
+                                var targetIndex = findColumnIndex(targetField);
+                                config.columns.splice(targetIndex, 0, draggedColumn); // add column before
+                                storeColumnSettings();
+                                draggedColumnField = void 0;
+
+                                $scope.$apply(function () {
+                                    config.onOrderChange(draggedColumnField);
+                                });
+                            });
+
+                            // fix to disable drag when cursor on input to be able select instead of drag
+                            headCell.find('input').on('mouseenter', function () {
+                                headCell.attr('draggable', '');
+                            });
+                            headCell.find('input').on('mouseleave', function () {
+                                headCell.attr('draggable', 'true');
+                            });
+                        }
 
                         headCell.attr('id', 'angular-small-grid-header-cell-' + column.field);
                         headCell.data('field', column.field);
@@ -199,38 +214,31 @@
 
                         if (column.class) headCell.addClass(column.class);
 
-                        // fix to disable drag when cursor on input to be able select instead of drag
-                        headCell.find('input').on('mouseenter', function () {
-                            headCell.attr('draggable', '');
-                        });
-                        headCell.find('input').on('mouseleave', function () {
-                            headCell.attr('draggable', 'true');
-                        });
+                        if (!config.disableColumnResize) {
+                            var cellToDrag = $('<div class="angular-small-grid-cell-to-drag"></div>');
+                            headCell.append(cellToDrag);
+                            if (!column.fixedWidth) {
+                                var resizer = $('<div class="angular-small-grid-resizer"></div>');
+                                resizer.mousedown(function (e) {
+                                    resizeInProgress = {element: headCell, x: e.clientX, column: column};
+                                    angularSmallGridHeader.addClass('angular-small-grid-resize-cursor');
+                                    $(document).one('mouseup', function (e) {
+                                        if (resizeInProgress) {
+                                            var columnMinWidth = resizeInProgress.column.minWidth ? resizeInProgress.column.minWidth : 50;
+                                            var width = Math.max(columnMinWidth, resizeInProgress.column.width + e.clientX - resizeInProgress.x);
 
-                        var cellToDrag = $('<div class="angular-small-grid-cell-to-drag"></div>');
-                        headCell.append(cellToDrag);
-
-                        if (!column.fixedWidth) {
-                            var resizer = $('<div class="angular-small-grid-resizer"></div>');
-                            resizer.mousedown(function (e) {
-                                resizeInProgress = {element: headCell, x: e.clientX, column: column};
-                                angularSmallGridHeader.addClass('angular-small-grid-resize-cursor');
-                                $(document).one('mouseup', function (e) {
-                                    if (resizeInProgress) {
-                                        var columnMinWidth = resizeInProgress.column.minWidth ? resizeInProgress.column.minWidth : 50;
-                                        var width = Math.max(columnMinWidth, resizeInProgress.column.width + e.clientX - resizeInProgress.x);
-
-                                        resizeInProgress.column.width = width;
-                                        storeColumnSettings();
-                                        resizeInProgress.element.css('width', width);
-                                        findColumnDiv(resizeInProgress.column.field).css('width', width);
-                                        angularSmallGridHeader.removeClass('angular-small-grid-resize-cursor');
-                                        resizeInProgress = void 0;
-                                    }
+                                            resizeInProgress.column.width = width;
+                                            storeColumnSettings();
+                                            resizeInProgress.element.css('width', width);
+                                            findColumnDiv(resizeInProgress.column.field).css('width', width);
+                                            angularSmallGridHeader.removeClass('angular-small-grid-resize-cursor');
+                                            resizeInProgress = void 0;
+                                        }
+                                    });
+                                    e.preventDefault();
                                 });
-                                e.preventDefault();
-                            });
-                            headCell.append(resizer);
+                                headCell.append(resizer);
+                            }
                         }
 
                         headCell.css('width', column.width);

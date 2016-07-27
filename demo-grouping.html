@@ -6,10 +6,10 @@
     <script type="application/javascript" src="angular-small-grid.js"></script>
     <link rel="stylesheet" href="angular-small-grid.css">
 
-    <script type="application/javascript" src="demo.js"></script>
+    <script type="application/javascript" src="demo-grouping.js"></script>
     <link rel="stylesheet" href="demo.css">
 
-    <title>Demo - Angular Small Grid</title>
+    <title>Grouping - Demo - Angular Small Grid</title>
 </head>
 <body>
 
@@ -18,16 +18,11 @@
 </script>
 
 <a href="https://github.com/terma/angular-small-grid">GitHub</a>
-<a href="demo-grouping.html">Grouping</a>
+<a href="demo.html">Basic</a>
 
-<h1>Demo - Angular Small Grid</h1>
-<button ng-click="pinLeft('column1')">Pin Firefox</button>
-<button ng-click="toggleV()">Show/Hide Second Column</button>
+<h1>Grouping - Demo - Angular Small Grid</h1>
 <button ng-click="reload()">Reload Data</button>
-<button ng-click="updateConfig()">Update Config</button>
 <button ng-click="noData()">No Data</button>
-<button ng-click="resetStoredState()">Reset stored state</button>
-<span>{{ columnFields }}</span>
 <angular-small-grid asg-config="config" asg-data="data"></angular-small-grid>
 </body>
 </html>
